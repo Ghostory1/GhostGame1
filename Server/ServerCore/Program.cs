@@ -40,25 +40,7 @@ namespace ServerCore
     {
         
         static Listener _listenser = new Listener();
-        static void OnAcceptHandler(Socket clientSocket)
-        {
-            try
-            {
-                GameSession session = new GameSession();
-                session.Start(clientSocket);
-                byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server!");
-                session.Send(sendBuff);
-
-                Thread.Sleep(1000);
-                session.Disconnect();
-                
-            }
-            catch(Exception e) 
-            {
-                Console.WriteLine(e.ToString());
-            }
-            
-        }
+           
 
         static void Main(string[] args)
         {

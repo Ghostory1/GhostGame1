@@ -96,7 +96,7 @@ namespace ServerCore
                         _pendingList.Clear();
 
                         OnSend(_sendArgs.BytesTransferred);
-                        Console.WriteLine($"Transferred bytes : {_sendArgs.BytesTransferred}");
+                        
                         if (_sendQueue.Count >0)
                         {
                             RegisterSend();
