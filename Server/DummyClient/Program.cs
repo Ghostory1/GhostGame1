@@ -1,60 +1,79 @@
-﻿using System;
+﻿using ServerCore;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
 namespace DummyClient
 {
+    class Pakcet
+    {
+        public ushort size;
+        public ushort packetId;
+    }
+    class GameSession : Session
+    {
+        public override void OnConnected(EndPoint endPoint)
+        {
+            Console.WriteLine($"OnConnected !{endPoint}");
+            Pakcet packet = new Pakcet() { size = 4, packetId = 7 };
+            //보낸다
+            for (int i = 0; i < 5; i++)
+            {
+                ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
+                byte[] buffer = BitConverter.GetBytes(packet.size);
+                byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
+                Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
+                Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
+                ArraySegment<byte> sendBuff = SendBufferHelper.Close(packet.size);
+                Send(sendBuff);
+            }
+        }
+
+        public override void OnDisconnected(EndPoint endPoint)
+        {
+            Console.WriteLine($"OnDisconnected !{endPoint}");
+        }
+
+        public override int OnRecv(ArraySegment<byte> buffer)
+        {
+            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
+            Console.WriteLine($"[From Server] {recvData}");
+
+            return buffer.Count;
+        }
+
+        public override void OnSend(int numOfBytes)
+        {
+            Console.WriteLine($"Transferred bytes : {numOfBytes}");
+        }
+    }
     class Program
     {
         static void Main(string[] args)
         {
-            
-            //DNS(Domain Name System)
             string host = Dns.GetHostName();
             IPHostEntry ipHost = Dns.GetHostEntry(host);
             IPAddress ipAddr = ipHost.AddressList[0];
-            IPEndPoint endPoint = new IPEndPoint(ipAddr, 7777); //아까 식당에 비유하면 인자로 넣어준 ipAddr가 식당주소, 7777는 포트번호로 정문인지 후문인지 식당의 문을 나타냄
+            IPEndPoint endPoint = new IPEndPoint(ipAddr, 7777);
 
-            while(true)
+            Connector connector = new Connector();
+            connector.Connect(endPoint, () => { return new GameSession(); });
+
+            while (true)
             {
-                //클라이언트 입장
-                //1. 휴대폰 설정
                 Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
                 try
                 {
-                    //2. 문지기한테 입장 문의
-                    //게임 개발에선 이런 Connect 같은 블로킹 계열을 쓰면 안된다. 서버가 안받아주면 계속 기다려야 할 수도있기 때문이다.
-                    socket.Connect(endPoint);
-                    Console.WriteLine($"Connect To {socket.RemoteEndPoint.ToString()}");
 
-                    //보낸다
-                    for(int i=0; i<5; i++)
-                    {
-                        byte[] sendBuff = Encoding.UTF8.GetBytes($"Hello World!{i}");
-                        //Send도 블로킹처럼 서버가 안받아주면 계속 기다릴수도있다.
-                        int sendBytes = socket.Send(sendBuff);
-                    }
-
-                    //받는다
-                    byte[] recvBuff = new byte[1024];
-                    //Receive도 블로킹처럼 서버가 안받아주면 계속 기다릴수도있다.
-                    int recvBytes = socket.Receive(recvBuff);
-                    string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
-                    Console.WriteLine($"[From Server] {recvData}");
-
-                    //나간다
-                    socket.Shutdown(SocketShutdown.Both);
-                    socket.Close();
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e.ToString());
                 }
+
+                Thread.Sleep(100);
             }
-            
-            Thread.Sleep(100);
         }
     }
 }
