@@ -62,7 +62,7 @@ namespace ServerCore
             //사용할수없으니 null을 리턴
 
             if (reserveSize > FreeSize)
-                return ArraySegment<byte>.Empty;
+                return null;
 
             return new ArraySegment<byte>(_buffer, _usedSize, reserveSize);
         }
