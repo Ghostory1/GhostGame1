@@ -8,6 +8,27 @@ namespace PacketGenerator
 {
     class PacketFormat
     {
+        // {0} 패킷 이름 / 번호 목록
+        // {1} 패킷 목록
+        public static string fileFormat =
+@"using ServerCore;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Text;
+
+public enum PacketID
+{{
+    {0}
+}}
+
+{1}
+";
+        //{0} 패킷 이름
+        //{1} 패킷 번호
+        public static string packetEnumFormat =
+@"{0} = {1},";
+
         // {0} 패킷이름
         // {1} 멤버 변수들
         // {2} 멤버 변수 Read
@@ -63,7 +84,7 @@ class {0}
         // {3} 멤버 변수 Read
         // {4} 멤버 변수 Write
         public static string memberListFormat =
-@"public struct {0}
+@"public class {0}
 {{
     {2}
     public void Read(ReadOnlySpan<byte> s, ref ushort count)
@@ -88,6 +109,12 @@ public List<{0}> {1}s = new List<{0}>();";
 count += sizeof({2});";
 
         //{0} 변수 이름
+        //{1} 변수 형식
+        public static string readByteFormat =
+@"this.{0} = ({1})segment.Array[segment.Offset + count];
+count += sizeof({1});";
+
+        //{0} 변수 이름
         public static string readStringFormat =
 @"ushort {0}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
 count += sizeof(ushort);
@@ -100,7 +127,7 @@ count += {0}Len;";
 @"this.{1}s.Clear();
 ushort {1}Len = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
 count += sizeof(ushort);
-for(int i=0; i< skillLen; i++)
+for(int i=0; i< {1}Len; i++)
 {{
     {0} {1} = new {0}();
     {1}.Read(s, ref count);
@@ -111,6 +138,13 @@ for(int i=0; i< skillLen; i++)
         public static string writeFormat =
 @"success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), this.{0});
 count += sizeof({1});";
+
+        //{0} 변수 이름
+        //{1} 변수 형식
+        public static string writeByteFormat =
+@"segment.Array[segment.Offset + count] = (byte)this.{0};
+count += sizeof({1});";
+
         //{0} 변수 이름
         public static string writeStringFormat =
 @"ushort {0}Len = (ushort)Encoding.Unicode.GetBytes(this.{0}, 0, this.{0}.Length, segment.Array, segment.Offset + count + sizeof(ushort));
