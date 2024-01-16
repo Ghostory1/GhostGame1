@@ -12,3 +12,8 @@ C:\Users\LLSSHH\source\repos\Server\PacketGenerator\obj\Debug\net6.0\refint\Pack
 C:\Users\LLSSHH\source\repos\Server\PacketGenerator\obj\Debug\net6.0\PacketGenerator.pdb
 C:\Users\LLSSHH\source\repos\Server\PacketGenerator\obj\Debug\net6.0\PacketGenerator.genruntimeconfig.cache
 C:\Users\LLSSHH\source\repos\Server\PacketGenerator\obj\Debug\net6.0\ref\PacketGenerator.dll
+C:\Users\LLSSHH\source\repos\Server\PacketGenerator\bin\net6.0\PacketGenerator.exe
+C:\Users\LLSSHH\source\repos\Server\PacketGenerator\bin\net6.0\PacketGenerator.deps.json
+C:\Users\LLSSHH\source\repos\Server\PacketGenerator\bin\net6.0\PacketGenerator.runtimeconfig.json
+C:\Users\LLSSHH\source\repos\Server\PacketGenerator\bin\net6.0\PacketGenerator.dll
+C:\Users\LLSSHH\source\repos\Server\PacketGenerator\bin\net6.0\PacketGenerator.pdb
